@@ -24,31 +24,7 @@ def register():
         for err_msg in form.errors.values():
             flash(f'There was an error with creating a user: {err_msg}', category='danger')
     return render_template('register.html', form=form)
-    
-@app.route('/register/<username>/validate')
-def validate_username(username):
-    print("validate the user")
-    print(username)
-    #validate if the user is in databases
-    user = Users.query.filter_by(username=username).first()
-    if user is not None:
-        response = jsonify({'message': 'True'})
-    else:
-        response = jsonify({'message': 'Cannot find username'}), 404
-    return response
 
-@app.route('/register/<email>/validatemail')
-def validate_email(email):
-    print("Validate the email")
-    #validate if the email is in databases
-    
-    email = Users.query.filter_by(email=email).first()
-    
-    if email is not None:
-        response = jsonify({'message': 'True'})
-    else:
-        response = jsonify({'message': 'Cannot find email'}), 404
-    return response
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():    
@@ -59,8 +35,10 @@ def login():
         print(attempted_user)
         if attempted_user and attempted_user.check_password_correction(attempted_password=form.password.data):
             login_user(attempted_user)
-            flash(f'Success! You are logged in as: {attempted_user.username}', category='success')
-            return redirect(url_for('catalog'))
+            #flash(f'Success! You are logged in as: {attempted_user.username}', category='success')
+            #return redirect(url_for('catalog'))
+            return jsonify({'message': 'Success! You are logged in as: {attempted_user.username}'}), 200
+        
         else:
             flash('Username and password are not match! Please try again', category='danger')
             return redirect(url_for('login'))
